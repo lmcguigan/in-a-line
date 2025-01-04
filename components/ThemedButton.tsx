@@ -16,24 +16,23 @@ export function ThemedButton({
   ...rest
 }: ThemedTextProps) {
   const buttonColor = useThemeColor({ light: lightColor, dark: darkColor }, 'tint')
-  const textColor = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const textColor = useThemeColor({ light: lightColor, dark: darkColor }, 'contrastText');
 
   return (
     <Pressable
-      style={[{backgroundColor: buttonColor}, styles.buttonBaseStyle]}
+      style={[{backgroundColor: buttonColor}, styles.buttonBaseStyle, style as any]}
       {...rest}
     >
-      <Text style={[{ color: textColor }]}>{text}</Text>
+      <Text style={[{ color: textColor, fontSize: 20, fontWeight: 'bold' }]}>{text}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   buttonBaseStyle: {
-    borderRadius: 5,
-    minHeight: 30,
-    minWidth: 30,
-    padding: 10,
-    margin: 10,
+    borderRadius: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    alignSelf: 'center'
   }
 });

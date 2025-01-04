@@ -43,9 +43,10 @@ export const getDiagonal = (array: Board, horizontalOffset: number, verticalOffs
     const numRows = array.length
     for(let i = 0; i < Math.min(numColumns, numRows); i++){
         const startingPoint = direction === 'topToBottom' ? i : array.length - 1 - i
-        // need to make sure i + horizontal offset is less than column length minus 1
-        if(i + verticalOffset < numRows && i + horizontalOffset < numColumns){
-            line.push(array[startingPoint + verticalOffset][i + horizontalOffset])
+        if(startingPoint + verticalOffset < numRows && i + horizontalOffset < numColumns){
+            if(array[startingPoint + verticalOffset]){
+                line.push(array[startingPoint + verticalOffset][i + horizontalOffset])
+            }
         }
     }
     return line
@@ -59,11 +60,11 @@ export const getDiagonals = (array: Board, n: number) => {
     const bottomToTops = []
     for(let i = 0; i < additionalColumns + 1; i++){
         topToBottoms.push(getDiagonal(array, i, 0, 'topToBottom'))
-        bottomToTops.push(getDiagonal(array, 0, i, 'bottomToTop'))
+        bottomToTops.push(getDiagonal(array, i, 0, 'bottomToTop'))
     }
-    for(let j = 0; j < additionalRows + 1; j++){
+    for(let j = 1; j < additionalRows + 1; j++){
         topToBottoms.push(getDiagonal(array, 0, j, 'topToBottom'))
-        bottomToTops.push(getDiagonal(array, j, 0, 'bottomToTop'))
+        bottomToTops.push(getDiagonal(array, 0, -j, 'bottomToTop'))
     }
     return topToBottoms.concat(bottomToTops)
 }
@@ -89,36 +90,40 @@ export const getHasNInARow = (arr: number[], n: number): boolean => {
 
 export const mapLine = (i: number, row: SlotValue[], player: PlayerEnum) => {
     const playersSlots = row.map((e, i) => ({index: i, player: e})).filter(e => e.player === player).map(e => e.index)
-    console.log(`Player ${player}'s slots in row ${i}`, playersSlots)
     return playersSlots
 }
 
-export const checkForWinner = (array: Board): undefined | PlayerEnum => {
+export const checkDirectionForWinner = (lines: SlotValue[][], n: number): undefined | PlayerEnum => {
+    let winner = undefined
+    lines.forEach((line, i) => {
+        const playerAHasLine = getHasNInARow(mapLine(i, line, PlayerEnum.A), n)
+        const playerBHasLine = getHasNInARow(mapLine(i, line, PlayerEnum.B), n)
+        if(playerAHasLine){
+            winner = PlayerEnum.A
+        }
+        if(playerBHasLine){
+            winner = PlayerEnum.B
+        }
+    })
+    return winner
+}
+
+export const checkForWinner = (array: Board, n: number): undefined | PlayerEnum => {
     let winner = undefined
     // check horizontally 
-    array.forEach((row, i) => {
-        const playerAHasFourHorizontal = getHasNInARow(mapLine(i, row, PlayerEnum.A), 4)
-        const playerBHasFourHorizontal = getHasNInARow(mapLine(i, row, PlayerEnum.B), 4)
-        if(playerAHasFourHorizontal){
-            winner = PlayerEnum.A
-        }
-        if(playerBHasFourHorizontal){
-            winner = PlayerEnum.B
-        }
-    })
+    const horizontalWinner = checkDirectionForWinner(array, n)
+    if(horizontalWinner !== undefined){
+        winner = horizontalWinner
+    }
     // check vertically
-    const columns = transpose(array)
-    columns.forEach((column, i) => {
-        const playerAHasFourVertical = getHasNInARow(mapLine(i, column, PlayerEnum.A), 4)
-        const playerBHasFourVertical = getHasNInARow(mapLine(i, column, PlayerEnum.A), 4)
-        if(playerAHasFourVertical){
-            winner = PlayerEnum.A
-        }
-        if(playerBHasFourVertical){
-            winner = PlayerEnum.B
-        }
-    })
+    const verticalWinner = checkDirectionForWinner(transpose(array), n)
+    if(verticalWinner !== undefined){
+        winner = verticalWinner
+    }
     // check diagonals
-    const diagonals = getDiagonals(array, 4)
+    const diagonalWinner = checkDirectionForWinner(getDiagonals(array, n), n)
+    if(diagonalWinner !== undefined){
+        winner = diagonalWinner
+    }
     return winner
 }

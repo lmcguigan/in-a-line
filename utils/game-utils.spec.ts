@@ -1,4 +1,4 @@
-import { getDiagonal, getHasNInARow } from "./game-utils"
+import { getDiagonal, getDiagonals, getHasNInARow } from "./game-utils"
 
 describe('Function that transposes an array', () => {
     it('should return a transposed array for a two-dimensional array', () => {
@@ -48,34 +48,11 @@ describe('Function that builds diagonals', () => {
     })
 })
 describe('Function that gets diagonals', () => {
-    // it('should', () => {
-    //     expect(getDiagonals(array1, 4)).toStrictEqual([
-    //         [
-    //             ['a', 'g', 'm', 's', 'y'],
-    //             ['b', 'h', 'n', 't'],
-    //             ['f', 'l', 'r', 'x', '4'],
-    //             ['k', 'q', 'w', '3'],
-    //             ['p', 'l', 'h', 'd'],
-    //             ['u', 'q', 'm', 'i', 'e'],
-    //             ['z', 'v', 'r', 'n', 'j'],
-    //             ['1', 'w', 's', 'o']
-    //         ]
-    //     ])
-    // })
-    //it('should', () => {
-        // expect(getDiagonals(array2, 4)).toStrictEqual(
-        //     [
-        //         [ '~', '*', 'c', 'k', 's', '}' ],
-        //         [ '!', '(', 'd', 'l', 't', '|' ],
-        //         [ '@', ')', 'e', 'm', 'u' ],
-        //         [ '#', '-', 'f', 'n' ],
-        //         [ 'h', 'b', '(', '#' ],
-        //         [ 'o', 'i', 'c', ')', '$' ],
-        //         [ 'v', 'p', 'j', 'd', '-' ],
-        //         [ 'w', 'q', 'k', 'e', '=', '^' ],
-        //         [ 'x', 'r', 'l', 'f', '{'],
-        //         [ 'y', 's', 'm', 'g'],
-        //     ]
-        // )
-    //})
+    it('should get all the diagonals for an array of u cols and v rows that have at least n elements in them', () => {
+        const diagonals = getDiagonals(array1, 4)
+        console.log(diagonals)
+        expect(diagonals.length).toBe(8)
+        const moreDi = getDiagonals(array2, 4)
+        console.log(moreDi)
+    })
 })

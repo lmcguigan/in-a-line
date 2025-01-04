@@ -1,37 +1,41 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { RootState } from '@/store/store';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 
 export default function TabTwoScreen() {
   const insets = useSafeAreaInsets();
   const gameResults = useSelector((state: RootState) => state.gameWinnings.games)
+  const borderColor = useThemeColor({}, 'text');
   return (
     <ThemedView style={{
-      flex: 1, 
-      alignContent: 'center',
-      alignItems: 'center',
-      paddingTop: insets.top,
-      paddingBottom: insets.bottom,
-      paddingLeft: insets.left + 30,
-      paddingRight: insets.right + 30,
-      }}>
+        flex: 1, 
+        paddingTop: insets.top + 30,
+        paddingBottom: insets.bottom,
+        paddingLeft: insets.left,
+        paddingRight: insets.right,
+    }}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Winners</ThemedText>
       </ThemedView>
       <FlatList 
         data={gameResults}
         renderItem={({item}) => {
+          const date = new Date(item.endTimestamp)
           return (
-            <ThemedView>
+            <ThemedView style={{paddingHorizontal: 30, paddingVertical: 10, borderBottomColor: borderColor, borderBottomWidth: 1}}>
+              <View>
+                <ThemedText style={{fontSize: 20, fontWeight: 'bold'}}>
+                  Winner: Player {item.winner.toUpperCase()}
+                </ThemedText>
+              </View>
               <ThemedText>
-                Game Completed: {item.endTimestamp}
+                Game Completed: {date.toLocaleString()}
               </ThemedText>
-              <ThemedText>
-                Winner: {item.winner}
-              </ThemedText>
+              <ThemedText>Moves: {item.moves}</ThemedText>
             </ThemedView>
           )
         }}
@@ -41,14 +45,7 @@ export default function TabTwoScreen() {
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
   titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center'
   },
 });
