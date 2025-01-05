@@ -68,6 +68,6 @@ const styles = StyleSheet.create({
     paddingTop: 30
   },
   section: {
-    paddingVertical: 30
+    paddingBottom: 20
   }
 });

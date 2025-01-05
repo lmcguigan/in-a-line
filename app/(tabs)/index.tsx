@@ -6,8 +6,8 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { addGame } from '@/store/gameWinningsSlice';
 import { useAppDispatch } from '@/store/hooks';
 import { RootState } from '@/store/store';
-import { getColor, getShadowColor } from '@/utils/color-utils';
-import { useEffect, useRef, useState } from 'react';
+import { getColor, getRingColor, getShadowColor } from '@/utils/color-utils';
+import { useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
@@ -25,38 +25,38 @@ export default function HomeScreen() {
   const playerBColor = useSelector((state: RootState) => state.settings.playerBColor)
   const rackColor = useSelector((state: RootState) => state.settings.rackColor)
   const [rows, setRows] = useState<Array<SlotValue>[]>(arr)
-  const [turn, setTurn] = useState<PlayerEnum>(PlayerEnum.A)
+  const [turn, setTurn] = useState<PlayerEnum | null>(null)
   const [winner, setWinner] = useState<PlayerEnum | undefined>(undefined)
   const [moves, setMoves] = useState<number>(0)
   const [highlightedColumn, setHighlightedColumn] = useState<number | undefined>(undefined)
   const intervalRef = useRef<null | NodeJS.Timeout>(null);
-  const startTimestampRef = useRef(0);
+  const lastTimestampRef = useRef(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false)
   const [secs, setSecs] = useState<number>(0)
   const insets = useSafeAreaInsets();
   const palette = {playerAColor, playerBColor, backgroundColor}
   const setFirstPlayer = () => {
-    // TODO - randomize this
-    setTurn(PlayerEnum.A)
+    const randomizedPlayer = Math.random() < 0.5 ? PlayerEnum.A : PlayerEnum.B
+    setTurn(randomizedPlayer)
   }
-  useEffect(() => {
-    setFirstPlayer()
-  }, [])
-  const startTimer = () => {
-    startTimestampRef.current = Date.now();
-        intervalRef.current = setInterval(() => {
-            const secondsEllapsed = Math.floor((Date.now() - startTimestampRef.current)/1000)
-            console.log(secondsEllapsed)
-            if(secondsEllapsed > 3600){
-              Alert.alert('Time limit exceeded', 'Your game was automatically ended because it exceeded the time limit of 60 minutes. The board has been reset.', [
-                {text: 'OK', style: 'default'}
-              ])
-            } else {
-              setSecs(secondsEllapsed)
-            }
-        }, 1000)
+  const startTimer = (timeElapsed: number) => {
+    setIsTimerRunning(true);
+    lastTimestampRef.current = Date.now();
+    intervalRef.current = setInterval(() => {
+        const secondsEllapsed = Math.floor((Date.now() - lastTimestampRef.current)/1000) + timeElapsed
+        if(secondsEllapsed > 3600){
+          stopTimer()
+          Alert.alert('Time limit exceeded', 'Your game was automatically ended because it exceeded the time limit of 60 minutes. The board has been reset.', [
+            {text: 'OK', style: 'default'}
+          ])
+        } else {
+          setSecs(secondsEllapsed)
+        }
+    }, 1000)
   }
   const stopTimer = () => {
     clearInterval(intervalRef.current as any);
+    setIsTimerRunning(false);
   }
   const convertSecsToString = () => {
     let mins = Math.floor(secs / 60)
@@ -65,11 +65,7 @@ export default function HomeScreen() {
   }
   const onPressSlot = (column: number, row: number) => {
     setMoves(moves + 1)
-    if(!winner){
-      if(startTimestampRef.current === 0){
-        // this is the first move, start the timer
-        startTimer();
-      }
+    if(isTimerRunning && turn){
       // update the rows with the token in the slot above the highest
       const updatedRows = getUpdatedRows(rows, column, turn)
       setRows(updatedRows)
@@ -80,18 +76,24 @@ export default function HomeScreen() {
       if(newWinner !== undefined){
         const now = Date.now()
         setWinner(newWinner)
-        dispatch(addGame({winner: newWinner, endTimestamp: now, duration: now - startTimestampRef.current, moves}))
+        dispatch(addGame({winner: newWinner, endTimestamp: now, duration: secs * 1000, moves}))
         stopTimer()
       }
     }
   }
   const startNewGame = () => {
-    setFirstPlayer();
+    setTurn(null)
     setRows(arr)
     setWinner(undefined)
     setMoves(0)
-    startTimestampRef.current = 0;
     setSecs(0)
+  }
+  const onPressPausePlay = () => {
+    if(isTimerRunning){
+      stopTimer()
+    } else {
+      startTimer(secs)
+    }
   }
   return (
       <ThemedView 
@@ -105,9 +107,15 @@ export default function HomeScreen() {
       >
       <ThemedText type='title' style={{textAlign: 'center'}}>Four in a Row!</ThemedText>
       <ThemedText type="subtitle" style={{textAlign: 'center'}}>Two players take turns.</ThemedText>
-      <View style={{paddingTop: 30}}>
-        <ThemedText>Moves: {moves}</ThemedText>
-        <ThemedText>Time Elapsed: {convertSecsToString()}</ThemedText>
+      <View style={{paddingTop: 30, flexDirection: 'row'}}>
+        <View style={{flex: 1}}>
+          <ThemedText style={{textAlign: 'center'}}>Moves:</ThemedText>
+          <ThemedText style={{textAlign: 'center'}}>{moves}</ThemedText>
+        </View>
+        <View style={{flex: 1}}>
+          <ThemedText style={{textAlign: 'center'}}>Time Elapsed:</ThemedText>
+          <ThemedText style={{textAlign: 'center', minWidth: 70}}> {convertSecsToString()}</ThemedText>
+        </View>
       </View>
       <ThemedView style={{ borderRadius: 20, backgroundColor: rackColor, marginVertical: 30}}>
         {rows.map((row, rowNum) => {
@@ -123,9 +131,10 @@ export default function HomeScreen() {
                       onPressOut={() => setHighlightedColumn(undefined)}
                       disabled={winner !== undefined}
                   >
-                    <Svg height="70%" width="70%" viewBox="0 0 100 100">
-                      <Circle cx="50" cy="50" r="45" stroke="grey" strokeWidth="2.5" fill={getShadowColor(getColor(element, palette))}/>
-                      <Circle cx="55" cy='55' r="35" fill={getColor(element, palette)}/>
+                    <Svg height="80%" width="80%" viewBox="0 0 100 100">
+                      <Circle cx="50" cy="50" r="49" fill={getShadowColor(rackColor)}/>
+                      <Circle cx="50" cy="50" r="41" stroke={getRingColor(rackColor)} strokeWidth="2.5" fill={getShadowColor(getColor(element, palette))}/>
+                      <Circle cx="53" cy='53' r="34" fill={getColor(element, palette)}/>
                     </Svg>
                   </Pressable>
                 )
@@ -136,16 +145,30 @@ export default function HomeScreen() {
       <View style={{
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'space-between'}}>
+        justifyContent: turn ? 'space-between' : 'flex-end'}}>
         {!winner && 
-          <ThemedText style={{fontSize: 20, fontWeight: 'bold'}}>Your move, <PlayerName palette={palette} player={turn}/></ThemedText>
+          <>
+            {turn ?
+              <>
+                {isTimerRunning ? 
+                <ThemedText style={{fontSize: 20, fontWeight: 'bold'}}>Your move, <PlayerName palette={palette} player={turn}/></ThemedText>
+                : <ThemedText style={{fontSize: 20, fontWeight: 'bold'}}>Game paused</ThemedText>}
+                <ThemedButton onPress={onPressPausePlay} text={isTimerRunning ? 'Pause Game' : 'Resume Game'} />
+              </>
+              :
+              <ThemedButton onPress={() => {
+                setFirstPlayer()
+                startTimer(0)
+              }} text={'Start the game'}/>
+            }
+          </>
         }
         {winner && 
           <>
             <ThemedText style={{fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}>
               Congratulations, <PlayerName palette={palette} player={winner}/>! {"\n\n"}You won!
             </ThemedText>
-            <ThemedButton onPress={startNewGame} text={'Start new game'}/>
+            <ThemedButton onPress={startNewGame} text={'New game'}/>
           </>}
       </View>
       </ThemedView>

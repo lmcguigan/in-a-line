@@ -50,9 +50,8 @@ describe('Function that builds diagonals', () => {
 describe('Function that gets diagonals', () => {
     it('should get all the diagonals for an array of u cols and v rows that have at least n elements in them', () => {
         const diagonals = getDiagonals(array1, 4)
-        console.log(diagonals)
         expect(diagonals.length).toBe(8)
-        const moreDi = getDiagonals(array2, 4)
-        console.log(moreDi)
+        const moreDiagonals = getDiagonals(array2, 4)
+        expect(moreDiagonals.length).toBe(12)
     })
 })

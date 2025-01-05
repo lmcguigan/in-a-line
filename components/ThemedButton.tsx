@@ -23,7 +23,7 @@ export function ThemedButton({
       style={[{backgroundColor: buttonColor}, styles.buttonBaseStyle, style as any]}
       {...rest}
     >
-      <Text style={[{ color: textColor, fontSize: 20, fontWeight: 'bold' }]}>{text}</Text>
+      <Text style={[{ color: textColor, fontSize: 20, fontWeight: 'bold', textAlign: 'center' }]}>{text}</Text>
     </Pressable>
   );
 }
@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 15,
     paddingHorizontal: 30,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    width: '80%',
   }
 });
