@@ -64,8 +64,8 @@ export default function HomeScreen() {
     return `${mins >= 10 ? mins : `0${mins}`}:${remainingSeconds >= 10 ? remainingSeconds : `0${remainingSeconds}`}`
   }
   const onPressSlot = (column: number, row: number) => {
-    setMoves(moves + 1)
     if(isTimerRunning && turn){
+      setMoves(moves + 1)
       // update the rows with the token in the slot above the highest
       const updatedRows = getUpdatedRows(rows, column, turn)
       setRows(updatedRows)

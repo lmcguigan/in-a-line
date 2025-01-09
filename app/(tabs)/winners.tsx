@@ -21,6 +21,10 @@ export default function TabTwoScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Winners</ThemedText>
       </ThemedView>
+      {gameResults.length === 0 && 
+      <View style={{paddingHorizontal: 30}}>
+        <ThemedText>No winners to show here. Start playing some games!</ThemedText>
+      </View>}
       <FlatList 
         data={gameResults}
         renderItem={({item}) => {
@@ -46,6 +50,7 @@ export default function TabTwoScreen() {
 
 const styles = StyleSheet.create({
   titleContainer: {
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingBottom: 30
   },
 });
