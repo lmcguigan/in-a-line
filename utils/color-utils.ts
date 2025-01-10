@@ -21,8 +21,8 @@ export const getRingColor = (color: string) => {
 export interface Palette {
     playerAColor: PlayerAColorOptions, playerBColor: PlayerBColorOptions, backgroundColor: string
 }
-export const getColor = (element: SlotValue, palette: Palette) => {
-    switch (element) {
+export const getColor = (value: SlotValue, palette: Palette) => {
+    switch (value) {
       case PlayerEnum.A:
         return palette.playerAColor
       case PlayerEnum.B:

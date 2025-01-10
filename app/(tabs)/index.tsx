@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { useSelector } from 'react-redux';
 import { checkForWinner, getUpdatedRows, PlayerEnum, SlotValue } from '../../utils/game-utils';
+import { convertSecsToMMSSString } from '@/utils/time-utils';
 
 const firstArr = new Array(7).fill(undefined) as Array<SlotValue>
 
@@ -58,11 +59,7 @@ export default function HomeScreen() {
     clearInterval(intervalRef.current as any);
     setIsTimerRunning(false);
   }
-  const convertSecsToString = () => {
-    let mins = Math.floor(secs / 60)
-    let remainingSeconds = secs % 60
-    return `${mins >= 10 ? mins : `0${mins}`}:${remainingSeconds >= 10 ? remainingSeconds : `0${remainingSeconds}`}`
-  }
+
   const onPressSlot = (column: number, row: number) => {
     if(isTimerRunning && turn){
       setMoves(moves + 1)
@@ -76,7 +73,7 @@ export default function HomeScreen() {
       if(newWinner !== undefined){
         const now = Date.now()
         setWinner(newWinner)
-        dispatch(addGame({winner: newWinner, endTimestamp: now, duration: secs * 1000, moves}))
+        dispatch(addGame({winner: newWinner, endTimestamp: now, duration: secs, moves, color: getColor(newWinner, palette)}))
         stopTimer()
       }
     }
@@ -109,12 +106,12 @@ export default function HomeScreen() {
       <ThemedText type="subtitle" style={{textAlign: 'center'}}>Two players take turns.</ThemedText>
       <View style={{paddingTop: 30, flexDirection: 'row'}}>
         <View style={{flex: 1}}>
-          <ThemedText style={{textAlign: 'center'}}>Moves:</ThemedText>
+          <ThemedText style={styles.subheaders}>Moves</ThemedText>
           <ThemedText style={{textAlign: 'center'}}>{moves}</ThemedText>
         </View>
         <View style={{flex: 1}}>
-          <ThemedText style={{textAlign: 'center'}}>Time Elapsed:</ThemedText>
-          <ThemedText style={{textAlign: 'center', minWidth: 70}}> {convertSecsToString()}</ThemedText>
+          <ThemedText style={styles.subheaders}>Time Elapsed</ThemedText>
+          <ThemedText style={{textAlign: 'center', minWidth: 70}}> {convertSecsToMMSSString(secs)}</ThemedText>
         </View>
       </View>
       <ThemedView style={{ borderRadius: 20, backgroundColor: rackColor, marginVertical: 30}}>
@@ -187,5 +184,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center'
+  },
+  subheaders: {
+    textAlign: 'center', 
+    fontWeight: 'bold', 
   }
 });

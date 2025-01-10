@@ -3,10 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import { PURGE } from "redux-persist";
 
 export interface Game {
-    duration?: number // in ms
+    duration: number // in secs
     winner: PlayerEnum
-    moves?: number
+    moves: number
     endTimestamp: number
+    color: string
 }
 
 interface GameWinningsState {
