@@ -7,7 +7,7 @@ import { addGame } from '@/store/gameWinningsSlice';
 import { useAppDispatch } from '@/store/hooks';
 import { RootState } from '@/store/store';
 import { getColor, getRingColor, getShadowColor } from '@/utils/color-utils';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';

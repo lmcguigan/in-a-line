@@ -1,5 +1,6 @@
 import { PlayerEnum } from "@/utils/game-utils";
 import { createSlice } from "@reduxjs/toolkit";
+import { PURGE } from "redux-persist";
 
 export interface Game {
     duration?: number // in ms
@@ -26,10 +27,13 @@ export const gameWinningsSlice = createSlice({
         addGame: create.reducer<Game>((state, action) => {
             state.games.push(action.payload)
         }),
-        clearGames: create.reducer<void>((state, action) => {
+        clearGames: create.reducer<void>((state) => {
             state.games = []
         })
-    })
+    }),
+    extraReducers: (builder) => {
+        builder.addCase(PURGE, () => initialState)
+    },
 })
 
 export const { addGame, loadGames, clearGames } = gameWinningsSlice.actions

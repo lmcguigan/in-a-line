@@ -1,8 +1,9 @@
+import { ThemedButton } from '@/components/ThemedButton';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { RootState } from '@/store/store';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { persistor, RootState } from '@/store/store';
+import { Alert, FlatList, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 
@@ -30,7 +31,7 @@ export default function TabTwoScreen() {
         renderItem={({item}) => {
           const date = new Date(item.endTimestamp)
           return (
-            <ThemedView style={{paddingHorizontal: 30, paddingVertical: 10, borderBottomColor: borderColor, borderBottomWidth: 1}}>
+            <ThemedView style={{paddingHorizontal: 30, paddingVertical: 20, borderBottomColor: borderColor, borderBottomWidth: 1}}>
               <View>
                 <ThemedText style={{fontSize: 20, fontWeight: 'bold'}}>
                   Winner: Player {item.winner.toUpperCase()}
@@ -44,6 +45,11 @@ export default function TabTwoScreen() {
           )
         }}
       />
+      <ThemedButton text='Reset Winner List' onPress={() => 
+        persistor.purge().then(() => {
+          Alert.alert('Success', 'Winner list was cleared.')
+        })}
+      />
     </ThemedView>
   );
 }
@@ -51,6 +57,6 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   titleContainer: {
     alignItems: 'center',
-    paddingBottom: 30
+    paddingBottom: 15
   },
 });
