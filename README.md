@@ -1,12 +1,21 @@
-# Four in a Row
+# Four in a Line
 
-This app digitizes the classic four-in-a-row style game. It allows players to customize their experience with different rack and token colors, and records game winners. 
+This app digitizes the classic four-in-a-row style game. It allows players to customize their experience with different UI colors, and records game winnings data. 
+
+![Four in a Line App Preview](assets/images/in-a-line.png)
+
+## About this project
 
 This project uses React Native, Expo, Redux, and Redux Toolkit. 
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+App features include:
+- Game play for two players on a single device, which allows users to "drop" their tokens into empty slots by tapping on the board
+- Recording metrics for total moves and game duration
+- Ability to pause and resume the game timer 
+- Ability to customize board and token colors
+- Automatic game winnings history, with duration and moves, saved and persisted between app relaunches
 
-## Get started
+## Running the App
 
 1. Install dependencies
 
@@ -26,5 +35,3 @@ In the output, you'll find options to open the app in a
 - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).

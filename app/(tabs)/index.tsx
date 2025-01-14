@@ -102,7 +102,7 @@ export default function HomeScreen() {
           paddingRight: insets.right + 30,
         }}
       >
-      <ThemedText type='title' style={{textAlign: 'center'}}>Four in a Row!</ThemedText>
+      <ThemedText type='title' style={{textAlign: 'center'}}>Four in a Line!</ThemedText>
       <ThemedText type="subtitle" style={{textAlign: 'center'}}>Two players take turns.</ThemedText>
       <View style={{paddingTop: 30, flexDirection: 'row'}}>
         <View style={{flex: 1}}>

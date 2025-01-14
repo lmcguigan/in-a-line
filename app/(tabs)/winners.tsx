@@ -46,7 +46,7 @@ export default function WinnersScreen() {
         <ThemedText>No winners to show here. Start playing some games!</ThemedText>
       </View>}
       <FlatList 
-        data={gameResults.sort((a, b) => b.endTimestamp - a.endTimestamp)}
+        data={[...gameResults].sort((a, b) => b.endTimestamp - a.endTimestamp)}
         renderItem={({item}) => renderWinnerItem(item)}
         ItemSeparatorComponent={() => <View style={{height: 1, width: '100%', backgroundColor: borderColor}}></View>}
       />
