@@ -14,6 +14,7 @@ App features include:
 - Ability to pause and resume the game timer 
 - Ability to customize board and token colors
 - Automatic game winnings history, with duration and moves, saved and persisted between app relaunches
+- Auto-reset for exceeding time limits
 
 ## Running the App
 

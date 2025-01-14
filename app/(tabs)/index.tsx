@@ -45,9 +45,10 @@ export default function HomeScreen() {
     lastTimestampRef.current = Date.now();
     intervalRef.current = setInterval(() => {
         const secondsEllapsed = Math.floor((Date.now() - lastTimestampRef.current)/1000) + timeElapsed
-        if(secondsEllapsed > 3600){
+        if(secondsEllapsed > 600){
           stopTimer()
-          Alert.alert('Time limit exceeded', 'Your game was automatically ended because it exceeded the time limit of 60 minutes. The board has been reset.', [
+          startNewGame()
+          Alert.alert('Time limit exceeded', 'Your game was automatically ended because it exceeded the time limit of 10 minutes.', [
             {text: 'OK', style: 'default'}
           ])
         } else {
